@@ -30,11 +30,14 @@ let presentQuote = { content: "", author: "" };
 let lastApiSuccess = false;
 
 async function fetchQuote(retry = false) {
-  const apiUrl = "https://api.quotable.io/random";
-  console.log(`Fetching from API: ${apiUrl} (retry: ${retry})`);
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+  const apiUrl =
+    "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+  const fullUrl = proxyUrl + apiUrl;
+  console.log(`Fetching from API: ${fullUrl} (retry: ${retry})`);
 
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(fullUrl);
     console.log(`API Response Status: ${response.status}`);
     console.log(`API Response OK: ${response.ok}`);
 
@@ -48,8 +51,8 @@ async function fetchQuote(retry = false) {
     console.log("API Success: Quote fetched!", data);
     lastApiSuccess = true;
     return {
-      content: data.content,
-      author: data.author || "Anonymous",
+      content: data.quoteText,
+      author: data.authorText || "Anonymous",
     };
   } catch (error) {
     console.warn("API fetch failed:", error.message);
@@ -152,6 +155,7 @@ function fallbackShare(shareText) {
     window.location.href
   )}&quote=${encodedText}`;
   window.open(facebookUrl, "_blank", "width=600, height=400");
+  console.log("Opening Facebook sharer with quote");
 }
 
 //event listeners
